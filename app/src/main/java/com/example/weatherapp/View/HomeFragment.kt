@@ -5,7 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.R
+import com.example.weatherapp.ViewModel.StationViewModel
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -22,6 +26,8 @@ class HomeFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private lateinit var viewModel: StationViewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -35,6 +41,16 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+
+        viewModel = ViewModelProvider(requireActivity()).get(StationViewModel::class.java)
+
+        viewModel.getSearchedStation("Zabrze")
+
+        viewModel.searchedStation.observe(viewLifecycleOwner, Observer {
+            var test = view?.findViewById<TextView>(R.id.testTV)
+
+            test?.text = viewModel.searchedStation.value.toString()
+        })
 
         return inflater.inflate(R.layout.fragment_home, container, false)
     }

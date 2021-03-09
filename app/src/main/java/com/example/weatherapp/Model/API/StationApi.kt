@@ -8,6 +8,6 @@ import retrofit2.Call
 
 interface StationApi {
 
-    @GET()
+    @GET("data/2.5/weather/")
     fun getStation(@Query("q") city: String, @Query("appid") key: String = "apiKey") : Call<Station>
 }
