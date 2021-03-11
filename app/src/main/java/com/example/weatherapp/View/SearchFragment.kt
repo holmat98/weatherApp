@@ -5,7 +5,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.TextView
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherapp.R
+import com.example.weatherapp.ViewModel.SearchedCityAdapter
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -22,6 +27,12 @@ class SearchFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private lateinit var myAdapter: SearchedCityAdapter
+    private lateinit var myLayoutManager: LinearLayoutManager
+    private lateinit var recyclerView: RecyclerView
+
+    private var cities: MutableCollection<String> = mutableListOf()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
@@ -35,7 +46,31 @@ class SearchFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+
+        myLayoutManager = LinearLayoutManager(context)
+        myAdapter = SearchedCityAdapter(cities)
+
         return inflater.inflate(R.layout.fragment_search, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val SearchButton = view.findViewById<Button>(R.id.searchedCityButton)
+
+        SearchButton.setOnClickListener {
+            val cityName = view.findViewById<TextView>(R.id.cityNameTV)
+            val recyclerView = view.findViewById<RecyclerView>(R.id.searchedCitiesRV)
+
+            recyclerView.apply {
+                this.adapter = myAdapter
+                this.layoutManager = myLayoutManager
+            }
+
+            if(!"".equals(cityName))
+                cities.add(cityName.getText().toString())
+                myAdapter.notifyDataSetChanged()
+        }
     }
 
     companion object {
