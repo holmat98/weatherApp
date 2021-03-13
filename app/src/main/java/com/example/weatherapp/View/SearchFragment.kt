@@ -7,10 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherapp.R
 import com.example.weatherapp.ViewModel.SearchedCityAdapter
+import com.example.weatherapp.ViewModel.SearchedCityViewModel
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -26,6 +30,8 @@ class SearchFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+
+    private lateinit var viewModel: SearchedCityViewModel
 
     private lateinit var myAdapter: SearchedCityAdapter
     private lateinit var myLayoutManager: LinearLayoutManager
@@ -47,8 +53,14 @@ class SearchFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
 
+        viewModel = ViewModelProvider(requireActivity()).get(SearchedCityViewModel::class.java)
+
         myLayoutManager = LinearLayoutManager(context)
-        myAdapter = SearchedCityAdapter(cities)
+        myAdapter = SearchedCityAdapter(viewModel.searchedCities, viewModel)
+
+        viewModel.searchedCities.observe(viewLifecycleOwner, Observer {
+            myAdapter.notifyDataSetChanged()
+        })
 
         return inflater.inflate(R.layout.fragment_search, container, false)
     }
@@ -57,19 +69,23 @@ class SearchFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val SearchButton = view.findViewById<Button>(R.id.searchedCityButton)
+        val SearchedCitiesRV = view.findViewById<RecyclerView>(R.id.searchedCitiesRV)
+
+        recyclerView = SearchedCitiesRV.apply {
+            this.adapter = myAdapter
+            this.layoutManager = myLayoutManager
+        }
 
         SearchButton.setOnClickListener {
             val cityName = view.findViewById<TextView>(R.id.cityNameTV)
-            val recyclerView = view.findViewById<RecyclerView>(R.id.searchedCitiesRV)
 
-            recyclerView.apply {
-                this.adapter = myAdapter
-                this.layoutManager = myLayoutManager
+            if(!"".equals(cityName.getText().toString()))
+            {
+                viewModel.addCity(cityName.getText().toString())
+                cityName.text = ""
+                cityName.isActivated = false
             }
 
-            if(!"".equals(cityName))
-                cities.add(cityName.getText().toString())
-                myAdapter.notifyDataSetChanged()
         }
     }
 

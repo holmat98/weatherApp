@@ -1,27 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal" android:layout_width="match_parent"
     android:layout_height="60dp"
-    android:layout_margin="5dp">
+    android:layout_marginBottom="5dp"
+    android:layout_marginLeft="5dp"
+    android:layout_marginRight="5dp">
 
-    <TextView
-        android:id="@+id/searchedCityTV"
-        android:layout_width="0dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_weight="7"
-        android:textSize="25dp"
-        android:text="Zabrze"
-        android:layout_gravity="left"
-        android:gravity="center_vertical"
-        />
+        >
 
-    <Button
-        android:id="@+id/deleteSearchedCityBtn"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
-        android:layout_margin="5dp"
-        android:drawableLeft="@drawable/ic_baseline_delete_24"
-        android:backgroundTint="@color/red"
-        />
+        <TextView
+            android:id="@+id/searchedCityTV"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="8"
+            android:textSize="25dp"
+            android:text="Zabrze"
+            android:layout_marginLeft="5dp"
+            android:layout_gravity="left"
+            android:gravity="center_vertical"
+            android:textColor="@color/black"
+            />
 
-</LinearLayout>
+        <Button
+            android:id="@+id/deleteSearchedCityBtn"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:backgroundTint="@color/white"
+            android:stateListAnimator="@null"
+            android:drawableLeft="@drawable/ic_baseline_close_24"
+            android:drawableTint="@color/red"
+            android:layout_gravity="center"
+            android:gravity="center"
+            />
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>

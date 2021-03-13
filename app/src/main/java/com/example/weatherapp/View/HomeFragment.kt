@@ -44,7 +44,7 @@ class HomeFragment : Fragment() {
 
         viewModel = ViewModelProvider(requireActivity()).get(StationViewModel::class.java)
 
-        viewModel.getSearchedStation("Zabrze")
+        //viewModel.getSearchedStation("Zabrze")
 
         viewModel.searchedStation.observe(viewLifecycleOwner, Observer {
             var test = view?.findViewById<TextView>(R.id.testTV)

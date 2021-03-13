@@ -62,7 +62,6 @@ class MainFragment : Fragment() {
             }
             true
         }
-
     }
 
     companion object {
