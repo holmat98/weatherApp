@@ -6,10 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.FrameLayout
+import android.widget.TextView
+import android.widget.Toast
+import androidx.navigation.findNavController
 import com.example.weatherapp.Model.HelperClass
 import com.example.weatherapp.R
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -18,23 +19,13 @@ private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
- * Use the [MainFragment.newInstance] factory method to
+ * Use the [SearchedCityFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class MainFragment : Fragment() {
+class SearchedCityFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-
-    private val homeFragment: HomeFragment = HomeFragment.newInstance("", "")
-    private val searchFragment: SearchFragment = SearchFragment.newInstance("", "")
-    private val settingsFragment: SettingsFragment = SettingsFragment.newInstance("", "")
-
-    private fun makeCurrentFragment(fragment: Fragment) =
-            activity?.supportFragmentManager?.beginTransaction()
-            ?.replace(R.id.fragmentViewer, fragment)
-            ?.commit()
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,35 +38,20 @@ class MainFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        return inflater.inflate(R.layout.fragment_searched_city, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val bttnNav = view.findViewById<BottomNavigationView>(R.id.bottomNavigation)
+        val goBackBtn = view.findViewById<Button>(R.id.goBackButton)
+        val cityName = view.findViewById<TextView>(R.id.searchedCityName)
 
-        makeCurrentFragment(HelperClass.currentFragment)
+        cityName.text = HelperClass.city
 
-        bttnNav.setOnNavigationItemSelectedListener {
-            when(it.itemId){
-                R.id.ic_home -> {
-                    makeCurrentFragment(homeFragment)
-                    HelperClass.currentFragment = homeFragment
-                }
-                R.id.ic_search -> {
-                    makeCurrentFragment(searchFragment)
-                    HelperClass.currentFragment = searchFragment
-                }
-                R.id.ic_settings -> {
-                    makeCurrentFragment(settingsFragment)
-                    HelperClass.currentFragment = settingsFragment
-                }
-            }
-            true
+        goBackBtn.setOnClickListener {
+            view -> view.findNavController().navigate(R.id.action_searchedCityFragment_to_mainFragment)
         }
-
-
     }
 
     companion object {
@@ -85,12 +61,12 @@ class MainFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment MainFragment.
+         * @return A new instance of fragment SearchedCityFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-                MainFragment().apply {
+                SearchedCityFragment().apply {
                     arguments = Bundle().apply {
                         putString(ARG_PARAM1, param1)
                         putString(ARG_PARAM2, param2)

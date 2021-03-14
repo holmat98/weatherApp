@@ -12,6 +12,6 @@ interface SearchedCityDao {
     @Delete
     suspend fun delete(city: SearchedCity)
 
-    @Query("select * from searchedCities_table order by id desc limit 5")
+    @Query("select * from searchedCities_table order by id desc")
     fun getAllSearchedCities() : LiveData<List<SearchedCity>>
 }

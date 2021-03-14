@@ -9,5 +9,18 @@
         android:id="@+id/mainFragment"
         android:name="com.example.weatherapp.View.MainFragment"
         android:label="fragment_main"
-        tools:layout="@layout/fragment_main" />
+        tools:layout="@layout/fragment_main" >
+        <action
+            android:id="@+id/action_mainFragment_to_searchedCityFragment"
+            app:destination="@id/searchedCityFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchedCityFragment"
+        android:name="com.example.weatherapp.View.SearchedCityFragment"
+        android:label="fragment_searched_city"
+        tools:layout="@layout/fragment_searched_city" >
+        <action
+            android:id="@+id/action_searchedCityFragment_to_mainFragment"
+            app:destination="@id/mainFragment" />
+    </fragment>
 </navigation>

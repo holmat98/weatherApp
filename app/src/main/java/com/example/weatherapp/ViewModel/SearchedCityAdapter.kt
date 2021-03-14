@@ -6,8 +6,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import androidx.lifecycle.LiveData
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherapp.Model.Entities.SearchedCity
+import com.example.weatherapp.Model.HelperClass
 import com.example.weatherapp.R
 
 class SearchedCityAdapter(var cities: LiveData<List<SearchedCity>>, val viewModel: SearchedCityViewModel): RecyclerView.Adapter<SearchedCityAdapter.CitiesHolder>() {
@@ -27,6 +29,11 @@ class SearchedCityAdapter(var cities: LiveData<List<SearchedCity>>, val viewMode
 
         deleteBtn.setOnClickListener {
             viewModel.deleteCity(cities.value?.get(position)!!)
+        }
+
+        holder.itemView.setOnClickListener {
+            view -> view.findNavController().navigate(R.id.action_mainFragment_to_searchedCityFragment)
+            HelperClass.city = cities.value?.get(position)?.city!!
         }
     }
 

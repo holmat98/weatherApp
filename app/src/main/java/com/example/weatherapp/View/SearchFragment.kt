@@ -7,11 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.weatherapp.Model.HelperClass
 import com.example.weatherapp.R
 import com.example.weatherapp.ViewModel.SearchedCityAdapter
 import com.example.weatherapp.ViewModel.SearchedCityViewModel
@@ -82,8 +85,8 @@ class SearchFragment : Fragment() {
             if(!"".equals(cityName.getText().toString()))
             {
                 viewModel.addCity(cityName.getText().toString())
-                cityName.text = ""
-                cityName.isActivated = false
+                HelperClass.city = cityName.getText().toString()
+                view.findNavController().navigate(R.id.action_mainFragment_to_searchedCityFragment)
             }
 
         }
