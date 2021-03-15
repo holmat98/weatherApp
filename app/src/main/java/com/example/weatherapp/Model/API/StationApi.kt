@@ -9,5 +9,5 @@ import retrofit2.Call
 interface StationApi {
 
     @GET("data/2.5/weather/")
-    fun getStation(@Query("q") city: String, @Query("appid") key: String = "apiKey") : Call<Station>
+    fun getStation(@Query("q") city: String, @Query("units") units: String = "Metric", @Query("appid") key: String = "apiKey") : Call<Station>
 }
