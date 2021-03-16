@@ -13,6 +13,10 @@ class FavoriteCityRepository(val favoriteCityDao: FavoriteCityDao) {
         favoriteCityDao.delete(city)
     }
 
+    suspend fun deleteCity(cityName: String){
+        favoriteCityDao.deleteCity(cityName)
+    }
+
     fun getAllCities() : LiveData<List<FavoriteCity>> = favoriteCityDao.getAllFavoritesCities()
 
 }

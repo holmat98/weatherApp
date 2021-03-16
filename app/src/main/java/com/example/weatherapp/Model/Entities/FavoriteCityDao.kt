@@ -14,4 +14,7 @@ interface FavoriteCityDao {
 
     @Query("select * from favoriteCity_table")
     fun getAllFavoritesCities() : LiveData<List<FavoriteCity>>
+
+    @Query("delete from favoriteCity_table where cityName=:cityName")
+    suspend fun deleteCity(cityName: String)
 }

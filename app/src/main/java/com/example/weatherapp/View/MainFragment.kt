@@ -7,8 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.FrameLayout
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.Model.HelperClass
+import com.example.weatherapp.Model.Repositories.FavoriteCityRepository
 import com.example.weatherapp.R
+import com.example.weatherapp.ViewModel.FavoriteCitiesViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 // TODO: Rename parameter arguments, choose names that match
@@ -30,6 +34,8 @@ class MainFragment : Fragment() {
     private val searchFragment: SearchFragment = SearchFragment.newInstance("", "")
     private val settingsFragment: SettingsFragment = SettingsFragment.newInstance("", "")
 
+    private lateinit var viewModel: FavoriteCitiesViewModel
+
     private fun makeCurrentFragment(fragment: Fragment) =
             activity?.supportFragmentManager?.beginTransaction()
             ?.replace(R.id.fragmentViewer, fragment)
@@ -47,6 +53,14 @@ class MainFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
+
+        viewModel = ViewModelProvider(requireActivity()).get(FavoriteCitiesViewModel::class.java)
+
+
+        viewModel.favoriteCities.observe(viewLifecycleOwner, Observer {
+            HelperClass.favoriteCities = viewModel.favoriteCities
+        })
+
         return inflater.inflate(R.layout.fragment_main, container, false)
     }
 

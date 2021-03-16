@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.R
+import com.example.weatherapp.ViewModel.FavoriteCitiesViewModel
 import com.example.weatherapp.ViewModel.StationViewModel
 
 // TODO: Rename parameter arguments, choose names that match
@@ -26,7 +27,7 @@ class HomeFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
-    private lateinit var viewModel: StationViewModel
+    private lateinit var viewModel: FavoriteCitiesViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,14 +43,18 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
 
-        viewModel = ViewModelProvider(requireActivity()).get(StationViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity()).get(FavoriteCitiesViewModel::class.java)
 
         //viewModel.getSearchedStation("Zabrze")
 
-        viewModel.searchedStation.observe(viewLifecycleOwner, Observer {
+        viewModel.favoriteCities.observe(viewLifecycleOwner, Observer {
             var test = view?.findViewById<TextView>(R.id.testTV)
+            var napis: String = ""
 
-            test?.text = viewModel.searchedStation.value.toString()
+            for(city in viewModel.favoriteCities.value!!)
+                napis += city.cityName + " "
+
+            test?.text = napis
         })
 
         return inflater.inflate(R.layout.fragment_home, container, false)

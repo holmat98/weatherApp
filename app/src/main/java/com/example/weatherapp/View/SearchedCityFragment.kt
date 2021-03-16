@@ -17,6 +17,7 @@ import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.example.weatherapp.Model.HelperClass
 import com.example.weatherapp.R
+import com.example.weatherapp.ViewModel.FavoriteCitiesViewModel
 import com.example.weatherapp.ViewModel.SearchedCityViewModel
 import com.example.weatherapp.ViewModel.StationViewModel
 import com.google.android.material.internal.ContextUtils
@@ -42,8 +43,20 @@ class SearchedCityFragment : Fragment() {
     private var param2: String? = null
 
     private lateinit var viewModel: StationViewModel
+    private lateinit var viewModelFavCities: FavoriteCitiesViewModel
 
-    fun bindImage(imgView: ImageView, imgUrl: String?){
+    private fun isAddedToFavorites(cityName: String): Boolean{
+        var tmp: Int = 0
+        for(city in viewModelFavCities.favoriteCities.value!!)
+        {
+            if(city.cityName.toLowerCase().equals(cityName.toLowerCase()))
+                tmp += 1
+        }
+
+        return tmp > 0
+    }
+
+    private fun bindImage(imgView: ImageView, imgUrl: String?){
         imgUrl?.let {
             val imgUri = imgUrl.toUri().buildUpon().scheme("https").build()
             Glide.with(imgView.context)
@@ -66,6 +79,7 @@ class SearchedCityFragment : Fragment() {
         // Inflate the layout for this fragment
 
         viewModel = ViewModelProvider(requireActivity()).get(StationViewModel::class.java)
+        viewModelFavCities = ViewModelProvider(requireActivity()).get(FavoriteCitiesViewModel::class.java)
 
         viewModel.getSearchedStation(HelperClass.city)
 
@@ -130,6 +144,16 @@ class SearchedCityFragment : Fragment() {
             sunsetTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.sys?.sunset!!), ZoneId.of("GMT+1")))
             pressureValue?.text = viewModel.searchedStation.value?.main?.pressure?.toInt().toString() + "hPa"
 
+            val addToFavoriteButton = view?.findViewById<CheckBox>(R.id.addToFavoriteButton)
+            if(isAddedToFavorites(viewModel.searchedStation?.value?.name!!)){
+                addToFavoriteButton?.setChecked(true)
+                addToFavoriteButton?.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_baseline_favorite_24, 0, 0, 0)
+            }
+            else {
+                addToFavoriteButton?.setChecked(false)
+            }
+            addToFavoriteButton?.toggle()
+
         })
 
         return inflater.inflate(R.layout.fragment_searched_city, container, false)
@@ -144,16 +168,16 @@ class SearchedCityFragment : Fragment() {
         val sunsetIcon = view.findViewById<ImageView>(R.id.sunsetIcon)
         val pressureIcon = view.findViewById<ImageView>(R.id.pressureIcon)
         val addToFavoriteButton = view.findViewById<CheckBox>(R.id.addToFavoriteButton)
-        addToFavoriteButton.setChecked(false)
-        addToFavoriteButton.toggle()
 
         addToFavoriteButton.setOnCheckedChangeListener { buttonView, isChecked ->
             if (addToFavoriteButton.isChecked == false)
             {
+                viewModelFavCities.addCity(viewModel.searchedStation.value?.name!!)
                 addToFavoriteButton.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_baseline_favorite_24, 0, 0, 0)
                 Toast.makeText(context, "Added to favorites", Toast.LENGTH_SHORT).show()
             }
             if(addToFavoriteButton.isChecked == true){
+                viewModelFavCities.deleteCity(viewModel.searchedStation.value?.name!!)
                 addToFavoriteButton.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_baseline_favorite_border_24, 0, 0, 0)
                 Toast.makeText(context, "Removed from favorites", Toast.LENGTH_SHORT).show()
             }
@@ -182,6 +206,7 @@ class SearchedCityFragment : Fragment() {
 
         goBackBtn.setOnClickListener {
             view -> view.findNavController().navigate(R.id.action_searchedCityFragment_to_mainFragment)
+            HelperClass.currentFragment = SearchFragment.newInstance("","")
         }
     }
 
