@@ -35,9 +35,12 @@
             android:text="Zabrze"
             />
 
-        <Button
+        <CheckBox
+            android:id="@+id/addToFavoriteButton"
             android:layout_width="56dp"
+            android:button="@null"
             android:layout_height="match_parent"
+            android:checked="false"
             android:drawableLeft="@drawable/ic_baseline_favorite_border_24"
             />
 
@@ -153,7 +156,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="6"
                     android:gravity="center_vertical"
-                    android:textSize="30dp"
+                    android:textSize="20dp"
                     android:textColor="@color/black"
                     android:text="Sunrise"
                     android:layout_marginLeft="5dp"
@@ -199,7 +202,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="6"
                     android:gravity="center_vertical"
-                    android:textSize="30dp"
+                    android:textSize="20dp"
                     android:textColor="@color/black"
                     android:text="Sunset"
                     android:layout_marginLeft="5dp"
@@ -245,7 +248,7 @@
                     android:layout_height="match_parent"
                     android:layout_weight="6"
                     android:gravity="center_vertical"
-                    android:textSize="30dp"
+                    android:textSize="20dp"
                     android:textColor="@color/black"
                     android:text="Pressure"
                     android:layout_marginLeft="5dp"

@@ -1,15 +1,15 @@
 package com.example.weatherapp.View
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.Drawable
+import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
+import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -20,7 +20,10 @@ import com.example.weatherapp.R
 import com.example.weatherapp.ViewModel.SearchedCityViewModel
 import com.example.weatherapp.ViewModel.StationViewModel
 import com.google.android.material.internal.ContextUtils
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
+import java.time.*
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 // TODO: Rename parameter arguments, choose names that match
@@ -57,6 +60,7 @@ class SearchedCityFragment : Fragment() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment
@@ -79,15 +83,15 @@ class SearchedCityFragment : Fragment() {
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 200..299)
                 iconUrl += "11"
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 300..321 && viewModel.searchedStation.value?.weather?.get(
-                    0
-                )?.id!! in 520..531
+                            0
+                    )?.id!! in 520..531
             )
                 iconUrl += "09"
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 500..504)
                 iconUrl += "10"
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 600..622 && viewModel.searchedStation.value?.weather?.get(
-                    0
-                )?.id!! == 511.toLong()
+                            0
+                    )?.id!! == 511.toLong()
             )
                 iconUrl += "13"
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 700..799)
@@ -101,33 +105,29 @@ class SearchedCityFragment : Fragment() {
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 803..804)
                 iconUrl += "04"
 
-            var jdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss z")
-            jdf.timeZone = TimeZone.getTimeZone("GMT+1")
-            var currentDate = jdf.format(Date(viewModel.searchedStation.value?.dt!!))
-            var sunrise = jdf.format(Date(viewModel.searchedStation?.value?.sys?.sunrise!!))
-            var sunset = jdf.format(Date(viewModel.searchedStation?.value?.sys?.sunset!!))
+            var currentDate = LocalDateTime.now(ZoneOffset.UTC)
+            var currentDateUnix = currentDate.atZone(ZoneOffset.UTC).toEpochSecond()
 
-            iconUrl += if (currentDate >= sunrise && currentDate < sunset)
+            iconUrl += if(currentDateUnix >= viewModel.searchedStation?.value?.sys?.sunset!!)
+                "n.png"
+            else if(currentDateUnix < viewModel.searchedStation?.value?.sys?.sunset!! && currentDateUnix >= viewModel.searchedStation?.value?.sys?.sunrise!!)
                 "d.png"
             else
                 "n.png"
-
-            temperatureDay?.text = currentDate
-
-            var jdf2 = SimpleDateFormat("HH:mm:ss z")
-            jdf2.timeZone = TimeZone.getTimeZone("GMT+1")
-            sunrise = jdf2.format(Date(viewModel.searchedStation?.value?.sys?.sunrise!!))
-            sunset = jdf2.format(Date(viewModel.searchedStation?.value?.sys?.sunset!!))
 
             var imageView: ImageView? = view?.findViewById<ImageView>(R.id.weatherIcon)
 
             bindImage(imageView!!, iconUrl)
 
+            var formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
+            var formatter2 = DateTimeFormatter.ofPattern("yyyy-mm-dd HH:mm:ss")
+
+            temperatureDay?.text = formatter2.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.dt!!), ZoneId.of("GMT+1")))
             cityName?.text = viewModel.searchedStation.value?.name
             temperatureTV?.text = viewModel.searchedStation.value?.main?.temp?.toInt().toString()
             weatherIconDesc?.text = viewModel.searchedStation.value?.weather?.get(0)?.description
-            sunriseTime?.text = sunrise
-            sunsetTime?.text = sunset
+            sunriseTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.sys?.sunrise!!), ZoneId.of("GMT+1")))
+            sunsetTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.sys?.sunset!!), ZoneId.of("GMT+1")))
             pressureValue?.text = viewModel.searchedStation.value?.main?.pressure?.toInt().toString() + "hPa"
 
         })
@@ -143,6 +143,21 @@ class SearchedCityFragment : Fragment() {
         val sunriseIcon = view.findViewById<ImageView>(R.id.sunriseIcon)
         val sunsetIcon = view.findViewById<ImageView>(R.id.sunsetIcon)
         val pressureIcon = view.findViewById<ImageView>(R.id.pressureIcon)
+        val addToFavoriteButton = view.findViewById<CheckBox>(R.id.addToFavoriteButton)
+        addToFavoriteButton.setChecked(false)
+        addToFavoriteButton.toggle()
+
+        addToFavoriteButton.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (addToFavoriteButton.isChecked == false)
+            {
+                addToFavoriteButton.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_baseline_favorite_24, 0, 0, 0)
+                Toast.makeText(context, "Added to favorites", Toast.LENGTH_SHORT).show()
+            }
+            if(addToFavoriteButton.isChecked == true){
+                addToFavoriteButton.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_baseline_favorite_border_24, 0, 0, 0)
+                Toast.makeText(context, "Removed from favorites", Toast.LENGTH_SHORT).show()
+            }
+        }
 
         sunriseIcon.setImageDrawable(requireContext().resources.getDrawable(
             context?.resources?.getIdentifier(
