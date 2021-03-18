@@ -16,8 +16,12 @@ class StationViewModel(application: Application): AndroidViewModel(application){
     val searchedStation: LiveData<Station?>
     get() = _searchedStation
 
-    private var _favoriteStations: MutableLiveData<ArrayList<Station?>> = MutableLiveData()
-    val favoriteStations: LiveData<ArrayList<Station?>>
+    private var _stationFromLocation: MutableLiveData<Station?> = MutableLiveData()
+    val stationFromLocation: LiveData<Station?>
+    get() = _stationFromLocation
+
+    private var _favoriteStations: MutableLiveData<ArrayList<Station>> = MutableLiveData()
+    val favoriteStations: LiveData<ArrayList<Station>>
     get() = _favoriteStations
 
     fun getSearchedStation(city: String){
@@ -26,10 +30,9 @@ class StationViewModel(application: Application): AndroidViewModel(application){
         }
     }
 
-    fun addStationFromLocation(lat: Double, lon: Double){
+    fun getStationFromLocation(lat: Double, lon: Double){
         viewModelScope.launch {
-            Log.d("DEBUG", "Wywołano")
-            _favoriteStations.value?.add(StationRepository.getStationByLocation(lon = lon, lat = lat))
+            _stationFromLocation.value = StationRepository.getStationByLocation(lon = lon, lat = lat)
         }
     }
 }

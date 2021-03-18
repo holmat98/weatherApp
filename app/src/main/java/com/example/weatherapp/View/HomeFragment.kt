@@ -18,6 +18,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.weatherapp.Model.Entities.Station
 import com.example.weatherapp.R
 import com.example.weatherapp.ViewModel.FavoriteCitiesViewModel
 import com.example.weatherapp.ViewModel.FavoriteCityAdapter
@@ -40,6 +41,8 @@ class HomeFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private lateinit var stations: ArrayList<Station>
+
     private lateinit var myAdapter: FavoriteCityAdapter
     private lateinit var myLayoutManager: LinearLayoutManager
     private lateinit var recyclerView: RecyclerView
@@ -54,8 +57,7 @@ class HomeFragment : Fragment() {
         override fun onLocationResult(locationResult: LocationResult) {
             var lastLocation: Location = locationResult.lastLocation
 
-            viewModelStation.addStationFromLocation(lastLocation.latitude, lastLocation.longitude)
-            Toast.makeText(context, "Lat: " + lastLocation.latitude.toString() + " Lon: " + lastLocation.longitude.toString(), Toast.LENGTH_SHORT).show()
+            viewModelStation.getStationFromLocation(lastLocation.latitude, lastLocation.longitude)
         }
     }
 
@@ -83,8 +85,7 @@ class HomeFragment : Fragment() {
                         newLocationData()
                     }
                     else{
-                        viewModelStation.addStationFromLocation(location.latitude, location.longitude)
-                        Toast.makeText(context, "Lat: " + location.latitude.toString() + " Lon: " + location.longitude.toString(), Toast.LENGTH_SHORT).show()
+                        viewModelStation.getStationFromLocation(location.latitude, location.longitude)
                     }
                 }
             }
@@ -122,18 +123,33 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
 
-        viewModel = ViewModelProvider(requireActivity()).get(FavoriteCitiesViewModel::class.java)
+        stations = arrayListOf()
+        stations.clear()
+
         viewModelStation = ViewModelProvider(requireActivity()).get(StationViewModel::class.java)
 
         myLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        myAdapter = FavoriteCityAdapter(viewModelStation.favoriteStations)
+        myAdapter = FavoriteCityAdapter(stations)
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         requestPermission()
         getLastLocation()
 
-        viewModelStation.favoriteStations.observe(viewLifecycleOwner, Observer {
-            Log.d("DEBUG", viewModelStation.favoriteStations.value?.get(0)?.name?:"BRAK")
+        viewModelStation.stationFromLocation.observe(viewLifecycleOwner, Observer {
+            stations.add(viewModelStation.stationFromLocation.value as Station)
+            myAdapter.notifyDataSetChanged()
+        })
+
+        viewModel = ViewModelProvider(requireActivity()).get(FavoriteCitiesViewModel::class.java)
+
+        viewModel.favoriteCities.observe(viewLifecycleOwner, Observer {
+            for (i in viewModel.favoriteCities.value!!){
+                viewModelStation.getSearchedStation(i.cityName)
+            }
+        })
+
+        viewModelStation.searchedStation.observe(viewLifecycleOwner, Observer {
+            stations.add(viewModelStation.searchedStation.value as Station)
             myAdapter.notifyDataSetChanged()
         })
 

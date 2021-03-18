@@ -10,4 +10,7 @@ interface StationApi {
 
     @GET("data/2.5/weather/")
     fun getStation(@Query("q") city: String, @Query("units") units: String = "Metric", @Query("appid") key: String = "apiKey") : Call<Station>
+
+    @GET("data/2.5/weather/")
+    fun getStationByLocation(@Query("lat") lat: Double, @Query("lon") lon: Double, @Query("units") units: String = "Metric", @Query("appid") key: String = "apiKey") : Call<Station>
 }

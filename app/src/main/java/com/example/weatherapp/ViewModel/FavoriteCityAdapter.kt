@@ -23,7 +23,7 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-class FavoriteCityAdapter(var cities: LiveData<ArrayList<Station?>>): RecyclerView.Adapter<FavoriteCityAdapter.CitiesHolder>() {
+class FavoriteCityAdapter(var cities: ArrayList<Station>): RecyclerView.Adapter<FavoriteCityAdapter.CitiesHolder>() {
     inner class CitiesHolder(view: View): RecyclerView.ViewHolder(view)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CitiesHolder {
@@ -43,37 +43,37 @@ class FavoriteCityAdapter(var cities: LiveData<ArrayList<Station?>>): RecyclerVi
         val pressureValue = holder.itemView.findViewById<TextView>(R.id.pressureValue2)
 
         var iconUrl: String = "http://openweathermap.org/img/wn/"
-        if (cities.value?.get(position)?.weather?.get(0)?.id!! in 200..299)
+        if (cities.get(position)?.weather?.get(0)?.id!! in 200..299)
             iconUrl += "11"
-        if (cities.value?.get(position)?.weather?.get(0)?.id!! in 300..321 && cities.value?.get(position)?.weather?.get(
+        if (cities.get(position)?.weather?.get(0)?.id!! in 300..321 && cities.get(position)?.weather?.get(
                 0
             )?.id!! in 520..531
         )
             iconUrl += "09"
-        if (cities.value?.get(position)?.weather?.get(0)?.id!! in 500..504)
+        if (cities.get(position)?.weather?.get(0)?.id!! in 500..504)
             iconUrl += "10"
-        if (cities.value?.get(position)?.weather?.get(0)?.id!! in 600..622 && cities.value?.get(position)?.weather?.get(
+        if (cities.get(position)?.weather?.get(0)?.id!! in 600..622 && cities.get(position)?.weather?.get(
                 0
             )?.id!! == 511.toLong()
         )
             iconUrl += "13"
-        if (cities.value?.get(position)?.weather?.get(0)?.id!! in 700..799)
+        if (cities.get(position)?.weather?.get(0)?.id!! in 700..799)
             iconUrl += "50"
-        if (cities.value?.get(position)?.weather?.get(0)?.id!! == 800.toLong())
+        if (cities.get(position)?.weather?.get(0)?.id!! == 800.toLong())
             iconUrl += "01"
-        if (cities.value?.get(position)?.weather?.get(0)?.id!! == 801.toLong())
+        if (cities.get(position)?.weather?.get(0)?.id!! == 801.toLong())
             iconUrl += "02"
-        if (cities.value?.get(position)?.weather?.get(0)?.id!! == 802.toLong())
+        if (cities.get(position)?.weather?.get(0)?.id!! == 802.toLong())
             iconUrl += "03"
-        if (cities.value?.get(position)?.weather?.get(0)?.id!! in 803..804)
+        if (cities.get(position)?.weather?.get(0)?.id!! in 803..804)
             iconUrl += "04"
 
         var currentDate = LocalDateTime.now(ZoneOffset.UTC)
         var currentDateUnix = currentDate.atZone(ZoneOffset.UTC).toEpochSecond()
 
-        iconUrl += if(currentDateUnix >= cities.value?.get(position)?.sys?.sunset!!)
+        iconUrl += if(currentDateUnix >= cities.get(position)?.sys?.sunset!!)
             "n.png"
-        else if(currentDateUnix < cities.value?.get(position)?.sys?.sunset!! && currentDateUnix >= cities.value?.get(position)?.sys?.sunrise!!)
+        else if(currentDateUnix < cities.get(position)?.sys?.sunset!! && currentDateUnix >= cities.get(position)?.sys?.sunrise!!)
             "d.png"
         else
             "n.png"
@@ -85,17 +85,17 @@ class FavoriteCityAdapter(var cities: LiveData<ArrayList<Station?>>): RecyclerVi
         var formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
         var formatter2 = DateTimeFormatter.ofPattern("yyyy-mm-dd HH:mm:ss")
 
-        temperatureDay?.text = formatter2.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(cities.value?.get(position)?.dt!!), ZoneId.of("GMT+1")))
-        cityName?.text = cities.value?.get(position)?.name
-        temperatureTV?.text = cities.value?.get(position)?.main?.temp?.toInt().toString()
-        weatherIconDesc?.text = cities.value?.get(position)?.weather?.get(0)?.description
-        sunriseTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(cities.value?.get(position)?.sys?.sunrise!!), ZoneId.of("GMT+1")))
-        sunsetTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(cities.value?.get(position)?.sys?.sunset!!), ZoneId.of("GMT+1")))
-        pressureValue?.text = cities.value?.get(position)?.main?.pressure?.toInt().toString() + "hPa"
+        temperatureDay?.text = formatter2.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(cities.get(position)?.dt!!), ZoneId.of("GMT+1")))
+        cityName?.text = cities.get(position)?.name
+        temperatureTV?.text = cities.get(position)?.main?.temp?.toInt().toString()
+        weatherIconDesc?.text = cities.get(position)?.weather?.get(0)?.description
+        sunriseTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(cities.get(position)?.sys?.sunrise!!), ZoneId.of("GMT+1")))
+        sunsetTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(cities.get(position)?.sys?.sunset!!), ZoneId.of("GMT+1")))
+        pressureValue?.text = cities.get(position)?.main?.pressure?.toInt().toString() + "hPa"
     }
 
     override fun getItemCount(): Int {
-        return cities.value?.size?: 0
+        return cities.size?: 0
     }
 
     private fun bindImage(imgView: ImageView, imgUrl: String?){
