@@ -11,5 +11,9 @@ class StationRepository {
         suspend fun getAllStations(city: String): Station? {
             return Service.stationApi.getStation(city = city).awaitResponse().body()
         }
+
+        suspend fun getStationByLocation(lon: Double, lat: Double): Station?{
+            return Service.stationApi.getStationByLocation(lat = lat, lon = lon).awaitResponse().body()
+        }
     }
 }

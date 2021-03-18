@@ -5,12 +5,9 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.FrameLayout
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.weatherapp.Model.HelperClass
-import com.example.weatherapp.Model.Repositories.FavoriteCityRepository
 import com.example.weatherapp.R
 import com.example.weatherapp.ViewModel.FavoriteCitiesViewModel
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -55,7 +52,6 @@ class MainFragment : Fragment() {
         // Inflate the layout for this fragment
 
         viewModel = ViewModelProvider(requireActivity()).get(FavoriteCitiesViewModel::class.java)
-
 
         viewModel.favoriteCities.observe(viewLifecycleOwner, Observer {
             HelperClass.favoriteCities = viewModel.favoriteCities

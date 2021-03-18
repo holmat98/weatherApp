@@ -1,16 +1,29 @@
 package com.example.weatherapp.View
 
+import android.content.Context
+import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
+import android.os.Looper
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.weatherapp.R
 import com.example.weatherapp.ViewModel.FavoriteCitiesViewModel
+import com.example.weatherapp.ViewModel.FavoriteCityAdapter
+import com.example.weatherapp.ViewModel.SearchedCityAdapter
 import com.example.weatherapp.ViewModel.StationViewModel
+import com.google.android.gms.location.*
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -27,7 +40,73 @@ class HomeFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
 
+    private lateinit var myAdapter: FavoriteCityAdapter
+    private lateinit var myLayoutManager: LinearLayoutManager
+    private lateinit var recyclerView: RecyclerView
+
     private lateinit var viewModel: FavoriteCitiesViewModel
+    private lateinit var viewModelStation: StationViewModel
+    lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    lateinit var locationRequest: LocationRequest
+    val PERMISSION_ID = 1010
+
+    private val locationCallback = object : LocationCallback(){
+        override fun onLocationResult(locationResult: LocationResult) {
+            var lastLocation: Location = locationResult.lastLocation
+
+            viewModelStation.addStationFromLocation(lastLocation.latitude, lastLocation.longitude)
+            Toast.makeText(context, "Lat: " + lastLocation.latitude.toString() + " Lon: " + lastLocation.longitude.toString(), Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun checkPermission(): Boolean{
+        return (ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
+    }
+
+    private fun requestPermission(){
+        ActivityCompat.requestPermissions(requireActivity(), arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_ID)
+    }
+
+    private fun isLocationEnabled(): Boolean{
+        var locationManager: LocationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager //getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+
+    private fun getLastLocation(){
+        if(checkPermission()){
+            if(isLocationEnabled()){
+                fusedLocationProviderClient.lastLocation.addOnCompleteListener{
+                    task -> var location: Location? = task.result
+                    if(location == null) {
+                        newLocationData()
+                    }
+                    else{
+                        viewModelStation.addStationFromLocation(location.latitude, location.longitude)
+                        Toast.makeText(context, "Lat: " + location.latitude.toString() + " Lon: " + location.longitude.toString(), Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            else{
+                Toast.makeText(context, "Please turn on Your device location", Toast.LENGTH_SHORT).show()
+            }
+        }
+        else{
+            requestPermission()
+        }
+    }
+
+    private fun newLocationData(){
+        var locationRequest = LocationRequest()
+        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        locationRequest.interval = 0
+        locationRequest.fastestInterval = 0
+        locationRequest.numUpdates = 1
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        if(checkPermission())
+            fusedLocationProviderClient!!.requestLocationUpdates(locationRequest, locationCallback, Looper.myLooper())
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,17 +123,18 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
 
         viewModel = ViewModelProvider(requireActivity()).get(FavoriteCitiesViewModel::class.java)
+        viewModelStation = ViewModelProvider(requireActivity()).get(StationViewModel::class.java)
 
-        //viewModel.getSearchedStation("Zabrze")
+        myLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        myAdapter = FavoriteCityAdapter(viewModelStation.favoriteStations)
 
-        viewModel.favoriteCities.observe(viewLifecycleOwner, Observer {
-            var test = view?.findViewById<TextView>(R.id.testTV)
-            var napis: String = ""
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        requestPermission()
+        getLastLocation()
 
-            for(city in viewModel.favoriteCities.value!!)
-                napis += city.cityName + " "
-
-            test?.text = napis
+        viewModelStation.favoriteStations.observe(viewLifecycleOwner, Observer {
+            Log.d("DEBUG", viewModelStation.favoriteStations.value?.get(0)?.name?:"BRAK")
+            myAdapter.notifyDataSetChanged()
         })
 
         return inflater.inflate(R.layout.fragment_home, container, false)
@@ -62,6 +142,14 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val favoriteCitiesRV = view.findViewById<RecyclerView>(R.id.favoriteCitiesRV)
+
+        recyclerView = favoriteCitiesRV.apply {
+            this.adapter = myAdapter
+            this.layoutManager = myLayoutManager
+        }
+
     }
 
     companion object {
