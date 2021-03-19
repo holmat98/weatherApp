@@ -73,6 +73,7 @@ class SearchedCityFragment : Fragment() {
         }
     }
 
+    @SuppressLint("RestrictedApi")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -87,11 +88,15 @@ class SearchedCityFragment : Fragment() {
 
             val cityName = view?.findViewById<TextView>(R.id.searchedCityName)
             val temperatureDay = view?.findViewById<TextView>(R.id.temperatureDay)
-            val weatherIconDesc = view?.findViewById<TextView>(R.id.weatherIconDescription)
+            val weatherIconDesc = view?.findViewById<TextView>(R.id.weatherDescription)
+            val weatherFeels = view?.findViewById<TextView>(R.id.weatherFeels)
             val temperatureTV = view?.findViewById<TextView>(R.id.temperatureTV)
-            val sunriseTime = view?.findViewById<TextView>(R.id.sunriseTime)
-            val sunsetTime = view?.findViewById<TextView>(R.id.sunsetTime)
+            val sunriseTime = view?.findViewById<TextView>(R.id.sunriseValue)
+            val sunsetTime = view?.findViewById<TextView>(R.id.sunsetValue)
+            val windValue = view?.findViewById<TextView>(R.id.windValue)
+            val humidityValue = view?.findViewById<TextView>(R.id.humidityValue)
             val pressureValue = view?.findViewById<TextView>(R.id.pressureValue)
+            val backgroundImageView = view?.findViewById<ImageView>(R.id.backgroundImage)
 
             var iconUrl: String = "http://openweathermap.org/img/wn/"
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 200..299)
@@ -119,6 +124,37 @@ class SearchedCityFragment : Fragment() {
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 803..804)
                 iconUrl += "04"
 
+            var backgroundImage: String = ""
+
+            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 200..299)
+                backgroundImage = "rainy.jpeg"
+            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 300..321 && viewModel.searchedStation.value?.weather?.get(
+                            0
+                    )?.id!! in 520..531
+            )
+                backgroundImage = "rainy"
+            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 500..504)
+                backgroundImage = "sunny"
+            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 600..622 && viewModel.searchedStation.value?.weather?.get(
+                            0
+                    )?.id!! == 511.toLong()
+            )
+                backgroundImage = "snowy"
+            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 700..799)
+                backgroundImage = "foggy"
+            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 800.toLong())
+                backgroundImage = "sunny"
+            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 801.toLong())
+                backgroundImage = "sunny"
+            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 802.toLong())
+                backgroundImage = "cloudy"
+            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 803..804)
+                backgroundImage = "cloudy"
+
+            backgroundImageView?.setImageDrawable(context?.resources?.getDrawable( context?.resources!!.getIdentifier(backgroundImage, "drawable", ContextUtils.getActivity(
+                    context
+            )?.packageName)))
+
             var currentDate = LocalDateTime.now(ZoneOffset.UTC)
             var currentDateUnix = currentDate.atZone(ZoneOffset.UTC).toEpochSecond()
 
@@ -133,16 +169,19 @@ class SearchedCityFragment : Fragment() {
 
             bindImage(imageView!!, iconUrl)
 
-            var formatter = DateTimeFormatter.ofPattern("HH:mm:ss")
-            var formatter2 = DateTimeFormatter.ofPattern("yyyy-mm-dd HH:mm:ss")
+            var formatter = DateTimeFormatter.ofPattern("HH:mm")
+            var formatter2 = DateTimeFormatter.ofPattern("yyyy-mm-dd HH:mm")
 
             temperatureDay?.text = formatter2.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.dt!!), ZoneId.of("GMT+1")))
             cityName?.text = viewModel.searchedStation.value?.name
             temperatureTV?.text = viewModel.searchedStation.value?.main?.temp?.toInt().toString()
             weatherIconDesc?.text = viewModel.searchedStation.value?.weather?.get(0)?.description
+            weatherFeels?.text = viewModel.searchedStation.value?.main?.temp_min.toString() + "/" + viewModel.searchedStation.value?.main?.temp_max.toString() + " feels like " + viewModel.searchedStation.value?.main?.feels_like.toString()
             sunriseTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.sys?.sunrise!!), ZoneId.of("GMT+1")))
             sunsetTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.sys?.sunset!!), ZoneId.of("GMT+1")))
             pressureValue?.text = viewModel.searchedStation.value?.main?.pressure?.toInt().toString() + "hPa"
+            windValue?.text = viewModel.searchedStation.value?.wind?.speed.toString() + "m/s"
+            humidityValue?.text = viewModel.searchedStation.value?.main?.humidity.toString() + "%"
 
             val addToFavoriteButton = view?.findViewById<CheckBox>(R.id.addToFavoriteButton)
             if(isAddedToFavorites(viewModel.searchedStation?.value?.name!!)){
@@ -159,14 +198,10 @@ class SearchedCityFragment : Fragment() {
         return inflater.inflate(R.layout.fragment_searched_city, container, false)
     }
 
-    @SuppressLint("RestrictedApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val goBackBtn = view.findViewById<Button>(R.id.goBackButton)
-        val sunriseIcon = view.findViewById<ImageView>(R.id.sunriseIcon)
-        val sunsetIcon = view.findViewById<ImageView>(R.id.sunsetIcon)
-        val pressureIcon = view.findViewById<ImageView>(R.id.pressureIcon)
         val addToFavoriteButton = view.findViewById<CheckBox>(R.id.addToFavoriteButton)
 
         addToFavoriteButton.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -182,27 +217,6 @@ class SearchedCityFragment : Fragment() {
                 Toast.makeText(context, "Removed from favorites", Toast.LENGTH_SHORT).show()
             }
         }
-
-        sunriseIcon.setImageDrawable(requireContext().resources.getDrawable(
-            context?.resources?.getIdentifier(
-                "sunrise", "drawable", ContextUtils.getActivity(
-                    context
-                )?.packageName)!!
-        ))
-
-        sunsetIcon.setImageDrawable(requireContext().resources.getDrawable(
-            context?.resources?.getIdentifier(
-                "sunset", "drawable", ContextUtils.getActivity(
-                    context
-                )?.packageName)!!
-        ))
-
-        pressureIcon.setImageDrawable(requireContext().resources.getDrawable(
-            context?.resources?.getIdentifier(
-                "pressure", "drawable", ContextUtils.getActivity(
-                    context
-                )?.packageName)!!
-        ))
 
         goBackBtn.setOnClickListener {
             view -> view.findNavController().navigate(R.id.action_searchedCityFragment_to_mainFragment)

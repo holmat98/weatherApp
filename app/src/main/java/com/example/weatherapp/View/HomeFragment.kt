@@ -129,7 +129,7 @@ class HomeFragment : Fragment() {
         viewModelStation = ViewModelProvider(requireActivity()).get(StationViewModel::class.java)
 
         myLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        myAdapter = FavoriteCityAdapter(stations)
+        myAdapter = FavoriteCityAdapter(stations, context)
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         requestPermission()
