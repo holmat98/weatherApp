@@ -101,14 +101,14 @@ class SearchedCityFragment : Fragment() {
             var iconUrl: String = "http://openweathermap.org/img/wn/"
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 200..299)
                 iconUrl += "11"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 300..321 && viewModel.searchedStation.value?.weather?.get(
+            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 300..321 || viewModel.searchedStation.value?.weather?.get(
                             0
                     )?.id!! in 520..531
             )
                 iconUrl += "09"
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 500..504)
                 iconUrl += "10"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 600..622 && viewModel.searchedStation.value?.weather?.get(
+            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 600..622 || viewModel.searchedStation.value?.weather?.get(
                             0
                     )?.id!! == 511.toLong()
             )
@@ -124,32 +124,26 @@ class SearchedCityFragment : Fragment() {
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 803..804)
                 iconUrl += "04"
 
-            var backgroundImage: String = ""
+            var backgroundImage: String = "clear"
 
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 200..299)
-                backgroundImage = "rainy.jpeg"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 300..321 && viewModel.searchedStation.value?.weather?.get(
-                            0
-                    )?.id!! in 520..531
-            )
-                backgroundImage = "rainy"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 500..504)
-                backgroundImage = "sunny"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 600..622 && viewModel.searchedStation.value?.weather?.get(
-                            0
-                    )?.id!! == 511.toLong()
-            )
-                backgroundImage = "snowy"
+                backgroundImage = "thunderstorm"
+            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 300..321)
+                backgroundImage = "rain"
+            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 500..531)
+                backgroundImage = "rain"
+            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 600..622)
+                backgroundImage = "snow"
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 700..799)
-                backgroundImage = "foggy"
+                backgroundImage = "fogg"
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 800.toLong())
-                backgroundImage = "sunny"
+                backgroundImage = "clear"
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 801.toLong())
-                backgroundImage = "sunny"
+                backgroundImage = "clear"
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 802.toLong())
-                backgroundImage = "cloudy"
+                backgroundImage = "cloud"
             if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 803..804)
-                backgroundImage = "cloudy"
+                backgroundImage = "cloud"
 
             backgroundImageView?.setImageDrawable(context?.resources?.getDrawable( context?.resources!!.getIdentifier(backgroundImage, "drawable", ContextUtils.getActivity(
                     context

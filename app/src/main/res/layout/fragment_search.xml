@@ -21,6 +21,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="8"
                 android:layout_margin="5dp"
+                android:textColor="@color/white"
                 />
 
             <Button
@@ -30,6 +31,7 @@
                 android:layout_margin="5dp"
                 android:backgroundTint="@color/primaryColorVariant"
                 android:drawableLeft="@drawable/ic_baseline_search_24"
+                android:stateListAnimator="@null"
                 />
 
         </LinearLayout>

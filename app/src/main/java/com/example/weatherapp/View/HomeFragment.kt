@@ -136,15 +136,28 @@ class HomeFragment : Fragment() {
         getLastLocation()
 
         viewModelStation.stationFromLocation.observe(viewLifecycleOwner, Observer {
-            stations.add(viewModelStation.stationFromLocation.value as Station)
-            myAdapter.notifyDataSetChanged()
+            var numOfRepetitions: Int = 0
+            for(j in stations){
+                if(j.name.equals(viewModelStation.stationFromLocation.value?.name))
+                    numOfRepetitions += 1
+            }
+            if(numOfRepetitions == 0) {
+                stations.add(viewModelStation.stationFromLocation.value as Station)
+                myAdapter.notifyDataSetChanged()
+            }
         })
 
         viewModel = ViewModelProvider(requireActivity()).get(FavoriteCitiesViewModel::class.java)
 
         viewModel.favoriteCities.observe(viewLifecycleOwner, Observer {
             for (i in viewModel.favoriteCities.value!!){
-                viewModelStation.getSearchedStation(i.cityName)
+                var numOfRepetitions: Int = 0
+                for(j in stations){
+                    if(j.name.equals(i.cityName))
+                        numOfRepetitions += 1
+                }
+                if(numOfRepetitions == 0)
+                    viewModelStation.getSearchedStation(i.cityName)
             }
         })
 

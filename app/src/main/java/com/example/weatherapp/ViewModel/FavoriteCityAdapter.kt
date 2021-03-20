@@ -53,14 +53,14 @@ class FavoriteCityAdapter(var cities: ArrayList<Station>, val context: Context?)
         var iconUrl: String = "http://openweathermap.org/img/wn/"
         if (cities.get(position)?.weather?.get(0)?.id!! in 200..299)
             iconUrl += "11"
-        if (cities.get(position)?.weather?.get(0)?.id!! in 300..321 && cities.get(position)?.weather?.get(
+        if (cities.get(position)?.weather?.get(0)?.id!! in 300..321 || cities.get(position)?.weather?.get(
                 0
             )?.id!! in 520..531
         )
             iconUrl += "09"
         if (cities.get(position)?.weather?.get(0)?.id!! in 500..504)
             iconUrl += "10"
-        if (cities.get(position)?.weather?.get(0)?.id!! in 600..622 && cities.get(position)?.weather?.get(
+        if (cities.get(position)?.weather?.get(0)?.id!! in 600..622 || cities.get(position)?.weather?.get(
                 0
             )?.id!! == 511.toLong()
         )
@@ -90,32 +90,27 @@ class FavoriteCityAdapter(var cities: ArrayList<Station>, val context: Context?)
 
         bindImage(imageView, iconUrl)
 
-        var backgroundImage: String = ""
+        var backgroundImage: String = "clear"
 
         if (cities.get(position)?.weather?.get(0)?.id!! in 200..299)
-            backgroundImage = "rainy.jpeg"
-        if (cities.get(position)?.weather?.get(0)?.id!! in 300..321 && cities.get(position)?.weather?.get(
+            backgroundImage = "thunderstorm"
+        if (cities.get(position)?.weather?.get(0)?.id!! in 300..321 || cities.get(position)?.weather?.get(
                         0
-                )?.id!! in 520..531
+                )?.id!! in 500..531
         )
-            backgroundImage = "rainy"
-        if (cities.get(position)?.weather?.get(0)?.id!! in 500..504)
-            backgroundImage = "sunny"
-        if (cities.get(position)?.weather?.get(0)?.id!! in 600..622 && cities.get(position)?.weather?.get(
-                        0
-                )?.id!! == 511.toLong()
-        )
-            backgroundImage = "snowy"
+            backgroundImage = "rain"
+        if (cities.get(position)?.weather?.get(0)?.id!! in 600..622)
+            backgroundImage = "snow"
         if (cities.get(position)?.weather?.get(0)?.id!! in 700..799)
-            backgroundImage = "foggy"
+            backgroundImage = "fogg"
         if (cities.get(position)?.weather?.get(0)?.id!! == 800.toLong())
-            backgroundImage = "sunny"
+            backgroundImage = "clear"
         if (cities.get(position)?.weather?.get(0)?.id!! == 801.toLong())
-            backgroundImage = "sunny"
+            backgroundImage = "clear"
         if (cities.get(position)?.weather?.get(0)?.id!! == 802.toLong())
-            backgroundImage = "cloudy"
+            backgroundImage = "cloud"
         if (cities.get(position)?.weather?.get(0)?.id!! in 803..804)
-            backgroundImage = "cloudy"
+            backgroundImage = "cloud"
 
         backgroundImageView.setImageDrawable(context!!.resources.getDrawable( context.resources.getIdentifier(backgroundImage, "drawable", ContextUtils.getActivity(
                 context
