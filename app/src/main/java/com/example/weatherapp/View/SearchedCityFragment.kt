@@ -177,15 +177,13 @@ class SearchedCityFragment : Fragment() {
             windValue?.text = viewModel.searchedStation.value?.wind?.speed.toString() + "m/s"
             humidityValue?.text = viewModel.searchedStation.value?.main?.humidity.toString() + "%"
 
-            val addToFavoriteButton = view?.findViewById<CheckBox>(R.id.addToFavoriteButton)
+            val addToFavoriteButton = view?.findViewById<Button>(R.id.addToFavoriteButton)
             if(isAddedToFavorites(viewModel.searchedStation?.value?.name!!)){
-                addToFavoriteButton?.setChecked(true)
                 addToFavoriteButton?.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_baseline_favorite_24, 0, 0, 0)
             }
             else {
-                addToFavoriteButton?.setChecked(false)
+                addToFavoriteButton?.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_baseline_favorite_border_24, 0, 0, 0)
             }
-            addToFavoriteButton?.toggle()
 
         })
 
@@ -196,16 +194,16 @@ class SearchedCityFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val goBackBtn = view.findViewById<Button>(R.id.goBackButton)
-        val addToFavoriteButton = view.findViewById<CheckBox>(R.id.addToFavoriteButton)
+        val addToFavoriteButton = view.findViewById<Button>(R.id.addToFavoriteButton)
 
-        addToFavoriteButton.setOnCheckedChangeListener { buttonView, isChecked ->
-            if (addToFavoriteButton.isChecked == false)
+        addToFavoriteButton.setOnClickListener {
+            if (!isAddedToFavorites(viewModel.searchedStation.value?.name!!))
             {
                 viewModelFavCities.addCity(viewModel.searchedStation.value?.name!!)
                 addToFavoriteButton.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_baseline_favorite_24, 0, 0, 0)
                 Toast.makeText(context, "Added to favorites", Toast.LENGTH_SHORT).show()
             }
-            if(addToFavoriteButton.isChecked == true){
+            else{
                 viewModelFavCities.deleteCity(viewModel.searchedStation.value?.name!!)
                 addToFavoriteButton.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_baseline_favorite_border_24, 0, 0, 0)
                 Toast.makeText(context, "Removed from favorites", Toast.LENGTH_SHORT).show()

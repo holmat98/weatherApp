@@ -29,13 +29,12 @@
             android:text="Zabrze"
             />
 
-        <CheckBox
-            android:id="@+id/addToFavoriteButton2"
+        <Button
+            android:id="@+id/deleteFromFavoritesButton"
             android:layout_width="56dp"
-            android:button="@null"
             android:layout_height="match_parent"
-            android:checked="false"
-            android:drawableLeft="@drawable/ic_baseline_favorite_24"
+            android:backgroundTint="@color/primaryColor"
+            android:stateListAnimator="@null"
             />
 
     </LinearLayout>

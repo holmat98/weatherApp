@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.net.toUri
 import androidx.lifecycle.LiveData
@@ -26,7 +27,7 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-class FavoriteCityAdapter(var cities: ArrayList<Station>, val context: Context?): RecyclerView.Adapter<FavoriteCityAdapter.CitiesHolder>() {
+class FavoriteCityAdapter(var cities: ArrayList<Station>, val context: Context?, val viewModel: StationViewModel, val viewModelFavCities: FavoriteCitiesViewModel): RecyclerView.Adapter<FavoriteCityAdapter.CitiesHolder>() {
     inner class CitiesHolder(view: View): RecyclerView.ViewHolder(view)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CitiesHolder {
@@ -49,6 +50,23 @@ class FavoriteCityAdapter(var cities: ArrayList<Station>, val context: Context?)
         val humidityValue = holder.itemView.findViewById<TextView>(R.id.humidityValue2)
         val pressureValue = holder.itemView.findViewById<TextView>(R.id.pressureValue2)
         val backgroundImageView = holder.itemView.findViewById<ImageView>(R.id.backgroundImage2)
+        val deleteFromFavorites = holder.itemView.findViewById<Button>(R.id.deleteFromFavoritesButton)
+
+        if(viewModel.stationFromLocation.value?.name?.toLowerCase().equals(cities.get(position).name.toLowerCase())){
+            deleteFromFavorites.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_baseline_navigation_24, 0, 0, 0)
+            deleteFromFavorites.isClickable = false
+        }
+        else{
+            deleteFromFavorites.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_baseline_favorite_24, 0, 0, 0)
+            deleteFromFavorites.setOnClickListener {
+                if(!viewModel.stationFromLocation.value?.name?.toLowerCase().equals(cities.get(position).name.toLowerCase())){
+                    viewModelFavCities.deleteCity(cities.get(position).name)
+                    cities.remove(cities.get(position))
+                    Toast.makeText(context, "Deleted from favorites", Toast.LENGTH_SHORT).show()
+                    this.notifyDataSetChanged()
+                }
+            }
+        }
 
         var iconUrl: String = "http://openweathermap.org/img/wn/"
         if (cities.get(position)?.weather?.get(0)?.id!! in 200..299)

@@ -127,9 +127,10 @@ class HomeFragment : Fragment() {
         stations.clear()
 
         viewModelStation = ViewModelProvider(requireActivity()).get(StationViewModel::class.java)
+        viewModel = ViewModelProvider(requireActivity()).get(FavoriteCitiesViewModel::class.java)
 
         myLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        myAdapter = FavoriteCityAdapter(stations, context)
+        myAdapter = FavoriteCityAdapter(stations, context, viewModelStation, viewModel)
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         requestPermission()
@@ -138,7 +139,7 @@ class HomeFragment : Fragment() {
         viewModelStation.stationFromLocation.observe(viewLifecycleOwner, Observer {
             var numOfRepetitions: Int = 0
             for(j in stations){
-                if(j.name.equals(viewModelStation.stationFromLocation.value?.name))
+                if(j.name.toLowerCase().equals(viewModelStation.stationFromLocation.value?.name!!.toLowerCase()))
                     numOfRepetitions += 1
             }
             if(numOfRepetitions == 0) {
@@ -147,13 +148,11 @@ class HomeFragment : Fragment() {
             }
         })
 
-        viewModel = ViewModelProvider(requireActivity()).get(FavoriteCitiesViewModel::class.java)
-
         viewModel.favoriteCities.observe(viewLifecycleOwner, Observer {
             for (i in viewModel.favoriteCities.value!!){
                 var numOfRepetitions: Int = 0
                 for(j in stations){
-                    if(j.name.equals(i.cityName))
+                    if(j.name.toLowerCase().equals(i.cityName.toLowerCase()))
                         numOfRepetitions += 1
                 }
                 if(numOfRepetitions == 0)
@@ -162,8 +161,16 @@ class HomeFragment : Fragment() {
         })
 
         viewModelStation.searchedStation.observe(viewLifecycleOwner, Observer {
-            stations.add(viewModelStation.searchedStation.value as Station)
-            myAdapter.notifyDataSetChanged()
+            var numOfRepetitions: Int = 0
+            for(i in stations){
+                if(i.name.toLowerCase().equals(viewModelStation.searchedStation.value?.name?.toLowerCase()))
+                    numOfRepetitions += 1
+            }
+
+            if(numOfRepetitions == 0){
+                stations.add(viewModelStation.searchedStation.value as Station)
+                myAdapter.notifyDataSetChanged()
+            }
         })
 
         return inflater.inflate(R.layout.fragment_home, container, false)

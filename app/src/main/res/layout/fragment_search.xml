@@ -22,6 +22,8 @@
                 android:layout_weight="8"
                 android:layout_margin="5dp"
                 android:textColor="@color/white"
+                android:backgroundTint="@color/white"
+                android:hint="Search city"
                 />
 
             <Button
