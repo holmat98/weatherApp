@@ -11,5 +11,6 @@ class HelperClass {
         var city: String = ""
         var currentFragment: Fragment = HomeFragment.newInstance("","")
         var favoriteCities: LiveData<List<FavoriteCity>>? = null
+        var layoutForElderly: Boolean = false
     }
 }

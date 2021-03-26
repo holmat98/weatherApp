@@ -124,13 +124,15 @@ class HomeFragment : Fragment() {
         // Inflate the layout for this fragment
 
         stations = arrayListOf()
-        stations.clear()
 
         viewModelStation = ViewModelProvider(requireActivity()).get(StationViewModel::class.java)
         viewModel = ViewModelProvider(requireActivity()).get(FavoriteCitiesViewModel::class.java)
 
         myLayoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         myAdapter = FavoriteCityAdapter(stations, context, viewModelStation, viewModel)
+
+        stations.clear()
+        myAdapter.notifyDataSetChanged()
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(requireActivity())
         requestPermission()

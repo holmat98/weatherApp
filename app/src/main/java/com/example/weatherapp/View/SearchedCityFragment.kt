@@ -10,7 +10,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.constraintlayout.solver.widgets.Helper
 import androidx.core.net.toUri
+import androidx.core.view.isVisible
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -85,97 +87,177 @@ class SearchedCityFragment : Fragment() {
         viewModel.getSearchedStation(HelperClass.city)
 
         viewModel.searchedStation.observe(viewLifecycleOwner, Observer {
-
             val cityName = view?.findViewById<TextView>(R.id.searchedCityName)
-            val temperatureDay = view?.findViewById<TextView>(R.id.temperatureDay)
-            val weatherIconDesc = view?.findViewById<TextView>(R.id.weatherDescription)
-            val weatherFeels = view?.findViewById<TextView>(R.id.weatherFeels)
-            val temperatureTV = view?.findViewById<TextView>(R.id.temperatureTV)
-            val sunriseTime = view?.findViewById<TextView>(R.id.sunriseValue)
-            val sunsetTime = view?.findViewById<TextView>(R.id.sunsetValue)
-            val windValue = view?.findViewById<TextView>(R.id.windValue)
-            val humidityValue = view?.findViewById<TextView>(R.id.humidityValue)
-            val pressureValue = view?.findViewById<TextView>(R.id.pressureValue)
-            val backgroundImageView = view?.findViewById<ImageView>(R.id.backgroundImage)
-
-            var iconUrl: String = "http://openweathermap.org/img/wn/"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 200..299)
-                iconUrl += "11"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 300..321 || viewModel.searchedStation.value?.weather?.get(
-                            0
-                    )?.id!! in 520..531
-            )
-                iconUrl += "09"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 500..504)
-                iconUrl += "10"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 600..622 || viewModel.searchedStation.value?.weather?.get(
-                            0
-                    )?.id!! == 511.toLong()
-            )
-                iconUrl += "13"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 700..799)
-                iconUrl += "50"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 800.toLong())
-                iconUrl += "01"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 801.toLong())
-                iconUrl += "02"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 802.toLong())
-                iconUrl += "03"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 803..804)
-                iconUrl += "04"
-
-            var backgroundImage: String = "clear"
-
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 200..299)
-                backgroundImage = "thunderstorm"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 300..321)
-                backgroundImage = "rain"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 500..531)
-                backgroundImage = "rain"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 600..622)
-                backgroundImage = "snow"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 700..799)
-                backgroundImage = "fogg"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 800.toLong())
-                backgroundImage = "clear"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 801.toLong())
-                backgroundImage = "clear"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 802.toLong())
-                backgroundImage = "cloud"
-            if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 803..804)
-                backgroundImage = "cloud"
-
-            backgroundImageView?.setImageDrawable(context?.resources?.getDrawable( context?.resources!!.getIdentifier(backgroundImage, "drawable", ContextUtils.getActivity(
-                    context
-            )?.packageName)))
-
-            var currentDate = LocalDateTime.now(ZoneOffset.UTC)
-            var currentDateUnix = currentDate.atZone(ZoneOffset.UTC).toEpochSecond()
-
-            iconUrl += if(currentDateUnix >= viewModel.searchedStation?.value?.sys?.sunset!!)
-                "n.png"
-            else if(currentDateUnix < viewModel.searchedStation?.value?.sys?.sunset!! && currentDateUnix >= viewModel.searchedStation?.value?.sys?.sunrise!!)
-                "d.png"
-            else
-                "n.png"
-
-            var imageView: ImageView? = view?.findViewById<ImageView>(R.id.weatherIcon)
-
-            bindImage(imageView!!, iconUrl)
-
-            var formatter = DateTimeFormatter.ofPattern("HH:mm")
-            var formatter2 = DateTimeFormatter.ofPattern("yyyy-mm-dd HH:mm")
-
-            temperatureDay?.text = formatter2.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.dt!!), ZoneId.of("GMT+1")))
             cityName?.text = viewModel.searchedStation.value?.name
-            temperatureTV?.text = viewModel.searchedStation.value?.main?.temp?.toInt().toString()
-            weatherIconDesc?.text = viewModel.searchedStation.value?.weather?.get(0)?.description
-            weatherFeels?.text = viewModel.searchedStation.value?.main?.temp_min.toString() + "/" + viewModel.searchedStation.value?.main?.temp_max.toString() + " feels like " + viewModel.searchedStation.value?.main?.feels_like.toString()
-            sunriseTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.sys?.sunrise!!), ZoneId.of("GMT+1")))
-            sunsetTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.sys?.sunset!!), ZoneId.of("GMT+1")))
-            pressureValue?.text = viewModel.searchedStation.value?.main?.pressure?.toInt().toString() + "hPa"
-            windValue?.text = viewModel.searchedStation.value?.wind?.speed.toString() + "m/s"
-            humidityValue?.text = viewModel.searchedStation.value?.main?.humidity.toString() + "%"
+
+            if(HelperClass.layoutForElderly){
+                val temperatureDay = view?.findViewById<TextView>(R.id.temperatureDay3)
+                val weatherIconDesc = view?.findViewById<TextView>(R.id.weatherDescription3)
+                val weatherFeels = view?.findViewById<TextView>(R.id.weatherFeels3)
+                val temperatureTV = view?.findViewById<TextView>(R.id.temperatureTV3)
+                val sunriseTime = view?.findViewById<TextView>(R.id.sunriseValue3)
+                val sunsetTime = view?.findViewById<TextView>(R.id.sunsetValue3)
+                val windValue = view?.findViewById<TextView>(R.id.windValue3)
+                val humidityValue = view?.findViewById<TextView>(R.id.humidityValue3)
+                val pressureValue = view?.findViewById<TextView>(R.id.pressureValue3)
+                val backgroundImageView = view?.findViewById<ImageView>(R.id.backgroundImage)
+
+                val normalLayout = view?.findViewById<ScrollView>(R.id.normalLayout)
+                val layoutForElderly = view?.findViewById<ScrollView>(R.id.layoutForElderly)
+
+                normalLayout?.isVisible = false
+                layoutForElderly?.isVisible = true
+                backgroundImageView?.isVisible = false
+
+                var iconUrl: String = "http://openweathermap.org/img/wn/"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 200..299)
+                    iconUrl += "11"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 300..321 || viewModel.searchedStation.value?.weather?.get(
+                                0
+                        )?.id!! in 520..531
+                )
+                    iconUrl += "09"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 500..504)
+                    iconUrl += "10"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 600..622 || viewModel.searchedStation.value?.weather?.get(
+                                0
+                        )?.id!! == 511.toLong()
+                )
+                    iconUrl += "13"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 700..799)
+                    iconUrl += "50"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 800.toLong())
+                    iconUrl += "01"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 801.toLong())
+                    iconUrl += "02"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 802.toLong())
+                    iconUrl += "03"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 803..804)
+                    iconUrl += "04"
+
+                var currentDate = LocalDateTime.now(ZoneOffset.UTC)
+                var currentDateUnix = currentDate.atZone(ZoneOffset.UTC).toEpochSecond()
+
+                iconUrl += if(currentDateUnix >= viewModel.searchedStation?.value?.sys?.sunset!!)
+                    "n.png"
+                else if(currentDateUnix < viewModel.searchedStation?.value?.sys?.sunset!! && currentDateUnix >= viewModel.searchedStation?.value?.sys?.sunrise!!)
+                    "d.png"
+                else
+                    "n.png"
+
+                var imageView: ImageView? = view?.findViewById<ImageView>(R.id.weatherIcon3)
+
+                bindImage(imageView!!, iconUrl)
+
+                var formatter = DateTimeFormatter.ofPattern("HH:mm")
+                var formatter2 = DateTimeFormatter.ofPattern("yyyy-mm-dd HH:mm")
+
+                temperatureDay?.text = formatter2.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.dt!!), ZoneId.of("GMT+1")))
+                temperatureTV?.text = viewModel.searchedStation.value?.main?.temp?.toInt().toString()
+                weatherIconDesc?.text = viewModel.searchedStation.value?.weather?.get(0)?.description
+                weatherFeels?.text = viewModel.searchedStation.value?.main?.temp_min.toString() + "/" + viewModel.searchedStation.value?.main?.temp_max.toString() + " feels like " + viewModel.searchedStation.value?.main?.feels_like.toString()
+                sunriseTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.sys?.sunrise!!), ZoneId.of("GMT+1")))
+                sunsetTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.sys?.sunset!!), ZoneId.of("GMT+1")))
+                pressureValue?.text = viewModel.searchedStation.value?.main?.pressure?.toInt().toString() + "hPa"
+                windValue?.text = viewModel.searchedStation.value?.wind?.speed.toString() + "m/s"
+                humidityValue?.text = viewModel.searchedStation.value?.main?.humidity.toString() + "%"
+            }
+            else{
+                val temperatureDay = view?.findViewById<TextView>(R.id.temperatureDay)
+                val weatherIconDesc = view?.findViewById<TextView>(R.id.weatherDescription)
+                val weatherFeels = view?.findViewById<TextView>(R.id.weatherFeels)
+                val temperatureTV = view?.findViewById<TextView>(R.id.temperatureTV)
+                val sunriseTime = view?.findViewById<TextView>(R.id.sunriseValue)
+                val sunsetTime = view?.findViewById<TextView>(R.id.sunsetValue)
+                val windValue = view?.findViewById<TextView>(R.id.windValue)
+                val humidityValue = view?.findViewById<TextView>(R.id.humidityValue)
+                val pressureValue = view?.findViewById<TextView>(R.id.pressureValue)
+                val backgroundImageView = view?.findViewById<ImageView>(R.id.backgroundImage)
+                val normalLayout = view?.findViewById<ScrollView>(R.id.normalLayout)
+                val layoutForElderly = view?.findViewById<ScrollView>(R.id.layoutForElderly)
+
+                normalLayout?.isVisible = true
+                layoutForElderly?.isVisible = false
+                backgroundImageView?.isVisible = true
+
+                var iconUrl: String = "http://openweathermap.org/img/wn/"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 200..299)
+                    iconUrl += "11"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 300..321 || viewModel.searchedStation.value?.weather?.get(
+                                0
+                        )?.id!! in 520..531
+                )
+                    iconUrl += "09"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 500..504)
+                    iconUrl += "10"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 600..622 || viewModel.searchedStation.value?.weather?.get(
+                                0
+                        )?.id!! == 511.toLong()
+                )
+                    iconUrl += "13"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 700..799)
+                    iconUrl += "50"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 800.toLong())
+                    iconUrl += "01"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 801.toLong())
+                    iconUrl += "02"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 802.toLong())
+                    iconUrl += "03"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 803..804)
+                    iconUrl += "04"
+
+                var backgroundImage: String = "clear"
+
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 200..299)
+                    backgroundImage = "thunderstorm"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 300..321)
+                    backgroundImage = "rain"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 500..531)
+                    backgroundImage = "rain"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 600..622)
+                    backgroundImage = "snow"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 700..799)
+                    backgroundImage = "fogg"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 800.toLong())
+                    backgroundImage = "clear"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 801.toLong())
+                    backgroundImage = "clear"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! == 802.toLong())
+                    backgroundImage = "cloud"
+                if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 803..804)
+                    backgroundImage = "cloud"
+
+                backgroundImageView?.setImageDrawable(context?.resources?.getDrawable( context?.resources!!.getIdentifier(backgroundImage, "drawable", ContextUtils.getActivity(
+                        context
+                )?.packageName)))
+
+                var currentDate = LocalDateTime.now(ZoneOffset.UTC)
+                var currentDateUnix = currentDate.atZone(ZoneOffset.UTC).toEpochSecond()
+
+                iconUrl += if(currentDateUnix >= viewModel.searchedStation?.value?.sys?.sunset!!)
+                    "n.png"
+                else if(currentDateUnix < viewModel.searchedStation?.value?.sys?.sunset!! && currentDateUnix >= viewModel.searchedStation?.value?.sys?.sunrise!!)
+                    "d.png"
+                else
+                    "n.png"
+
+                var imageView: ImageView? = view?.findViewById<ImageView>(R.id.weatherIcon)
+
+                bindImage(imageView!!, iconUrl)
+
+                var formatter = DateTimeFormatter.ofPattern("HH:mm")
+                var formatter2 = DateTimeFormatter.ofPattern("yyyy-mm-dd HH:mm")
+
+                temperatureDay?.text = formatter2.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.dt!!), ZoneId.of("GMT+1")))
+                temperatureTV?.text = viewModel.searchedStation.value?.main?.temp?.toInt().toString()
+                weatherIconDesc?.text = viewModel.searchedStation.value?.weather?.get(0)?.description
+                weatherFeels?.text = viewModel.searchedStation.value?.main?.temp_min.toString() + "/" + viewModel.searchedStation.value?.main?.temp_max.toString() + " feels like " + viewModel.searchedStation.value?.main?.feels_like.toString()
+                sunriseTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.sys?.sunrise!!), ZoneId.of("GMT+1")))
+                sunsetTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.sys?.sunset!!), ZoneId.of("GMT+1")))
+                pressureValue?.text = viewModel.searchedStation.value?.main?.pressure?.toInt().toString() + "hPa"
+                windValue?.text = viewModel.searchedStation.value?.wind?.speed.toString() + "m/s"
+                humidityValue?.text = viewModel.searchedStation.value?.main?.humidity.toString() + "%"
+            }
 
             val addToFavoriteButton = view?.findViewById<Button>(R.id.addToFavoriteButton)
             if(isAddedToFavorites(viewModel.searchedStation?.value?.name!!)){
