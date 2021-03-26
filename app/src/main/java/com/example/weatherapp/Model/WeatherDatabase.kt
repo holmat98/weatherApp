@@ -4,12 +4,10 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.example.weatherapp.Model.Entities.FavoriteCity
-import com.example.weatherapp.Model.Entities.FavoriteCityDao
-import com.example.weatherapp.Model.Entities.SearchedCity
-import com.example.weatherapp.Model.Entities.SearchedCityDao
+import androidx.sqlite.db.SupportSQLiteDatabase
+import com.example.weatherapp.Model.Entities.*
 
-@Database(entities = [FavoriteCity::class, SearchedCity::class], version = 2, exportSchema = false)
+@Database(entities = [FavoriteCity::class, SearchedCity::class], version = 4, exportSchema = false)
 abstract class WeatherDatabase: RoomDatabase(){
     abstract fun searchedCityDao(): SearchedCityDao
     abstract fun favoriteCityDao(): FavoriteCityDao

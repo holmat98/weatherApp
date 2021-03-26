@@ -5,6 +5,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
+import android.widget.Switch
+import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
+import com.example.weatherapp.Model.HelperClass
 import com.example.weatherapp.R
 
 // TODO: Rename parameter arguments, choose names that match
@@ -17,7 +22,7 @@ private const val ARG_PARAM2 = "param2"
  * Use the [SettingsFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class SettingsFragment : Fragment() {
+class SettingsFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
@@ -35,7 +40,19 @@ class SettingsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_settings, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val switchButton = view.findViewById<Switch>(R.id.switchToElderlyMode)
+
+        switchButton.isChecked = HelperClass.layoutForElderly
+        //switchButton.toggle()
+
+        switchButton.setOnCheckedChangeListener(this)
     }
 
     companion object {
@@ -56,5 +73,10 @@ class SettingsFragment : Fragment() {
                     putString(ARG_PARAM2, param2)
                 }
             }
+    }
+
+    override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+        HelperClass.layoutForElderly = isChecked
+        Toast.makeText(context, if (isChecked) "Changed to elderly mode" else "Changed to normal mode", Toast.LENGTH_SHORT).show()
     }
 }
