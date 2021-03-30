@@ -11,6 +11,7 @@ import com.example.weatherapp.Model.Entities.Station
 import com.example.weatherapp.Model.Repositories.StationRepository
 import kotlinx.coroutines.launch
 
+// Klasa odpowiedzialna za komunikację z Api
 class StationViewModel(application: Application): AndroidViewModel(application){
     private var _searchedStation: MutableLiveData<Station?> = MutableLiveData()
     val searchedStation: LiveData<Station?>

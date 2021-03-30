@@ -50,7 +50,6 @@ class SettingsFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
         val switchButton = view.findViewById<Switch>(R.id.switchToElderlyMode)
 
         switchButton.isChecked = HelperClass.layoutForElderly
-        //switchButton.toggle()
 
         switchButton.setOnCheckedChangeListener(this)
     }
@@ -75,6 +74,7 @@ class SettingsFragment : Fragment(), CompoundButton.OnCheckedChangeListener {
             }
     }
 
+    // Reakcja na zmiane stanu przycisku switch.
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
         HelperClass.layoutForElderly = isChecked
         Toast.makeText(context, if (isChecked) "Changed to elderly mode" else "Changed to normal mode", Toast.LENGTH_SHORT).show()

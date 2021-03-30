@@ -47,6 +47,7 @@ class SearchedCityFragment : Fragment() {
     private lateinit var viewModel: StationViewModel
     private lateinit var viewModelFavCities: FavoriteCitiesViewModel
 
+    // Funkcja sprawdza czy wyszukane miasto jest dodane do ulubionych
     private fun isAddedToFavorites(cityName: String): Boolean{
         var tmp: Int = 0
         for(city in viewModelFavCities.favoriteCities.value!!)
@@ -58,6 +59,7 @@ class SearchedCityFragment : Fragment() {
         return tmp > 0
     }
 
+    // Funkcja pobiera ikonę pogody ze strony Api i przypisuje do imageView
     private fun bindImage(imgView: ImageView, imgUrl: String?){
         imgUrl?.let {
             val imgUri = imgUrl.toUri().buildUpon().scheme("https").build()
@@ -75,6 +77,8 @@ class SearchedCityFragment : Fragment() {
         }
     }
 
+    // Wysyłane jest zapytanie do Api. Po otrzymaniu odpowiedzi, dane pogodowe są przypisywane do odpowiednich elementów layoutu
+    // w zależności od tego czy jest włączony tryb dla osób starszych
     @SuppressLint("RestrictedApi")
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
@@ -109,6 +113,7 @@ class SearchedCityFragment : Fragment() {
                 layoutForElderly?.isVisible = true
                 backgroundImageView?.isVisible = false
 
+                // Tworzenie odpowiedniego linka do pobrania zdjęcia
                 var iconUrl: String = "http://openweathermap.org/img/wn/"
                 if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 200..299)
                     iconUrl += "11"
@@ -149,11 +154,12 @@ class SearchedCityFragment : Fragment() {
 
                 bindImage(imageView!!, iconUrl)
 
+                // Tworzenie formatu czasowego dla danych pobranych z Api
                 var formatter = DateTimeFormatter.ofPattern("HH:mm")
-                var formatter2 = DateTimeFormatter.ofPattern("yyyy-mm-dd HH:mm")
+                var formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
                 temperatureDay?.text = formatter2.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.dt!!), ZoneId.of("GMT+1")))
-                temperatureTV?.text = viewModel.searchedStation.value?.main?.temp?.toInt().toString()
+                temperatureTV?.text = viewModel.searchedStation.value?.main?.temp?.toInt().toString() + "\u2103"
                 weatherIconDesc?.text = viewModel.searchedStation.value?.weather?.get(0)?.description
                 weatherFeels?.text = viewModel.searchedStation.value?.main?.temp_min.toString() + "/" + viewModel.searchedStation.value?.main?.temp_max.toString() + " feels like " + viewModel.searchedStation.value?.main?.feels_like.toString()
                 sunriseTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.sys?.sunrise!!), ZoneId.of("GMT+1")))
@@ -206,6 +212,8 @@ class SearchedCityFragment : Fragment() {
                 if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 803..804)
                     iconUrl += "04"
 
+
+                // Ustalanie, którego zdjęcia w tle użyć na podstawie danych pobranych z Api
                 var backgroundImage: String = "clear"
 
                 if (viewModel.searchedStation.value?.weather?.get(0)?.id!! in 200..299)
@@ -246,12 +254,12 @@ class SearchedCityFragment : Fragment() {
                 bindImage(imageView!!, iconUrl)
 
                 var formatter = DateTimeFormatter.ofPattern("HH:mm")
-                var formatter2 = DateTimeFormatter.ofPattern("yyyy-mm-dd HH:mm")
+                var formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
                 temperatureDay?.text = formatter2.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.dt!!), ZoneId.of("GMT+1")))
-                temperatureTV?.text = viewModel.searchedStation.value?.main?.temp?.toInt().toString()
+                temperatureTV?.text = viewModel.searchedStation.value?.main?.temp?.toInt().toString() + "\u2103"
                 weatherIconDesc?.text = viewModel.searchedStation.value?.weather?.get(0)?.description
-                weatherFeels?.text = viewModel.searchedStation.value?.main?.temp_min.toString() + "/" + viewModel.searchedStation.value?.main?.temp_max.toString() + " feels like " + viewModel.searchedStation.value?.main?.feels_like.toString()
+                weatherFeels?.text = viewModel.searchedStation.value?.main?.temp_min.toString() + "\u2103" + "/" + viewModel.searchedStation.value?.main?.temp_max.toString() + "\u2103" + " feels like " + viewModel.searchedStation.value?.main?.feels_like.toString() + "\u2103"
                 sunriseTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.sys?.sunrise!!), ZoneId.of("GMT+1")))
                 sunsetTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(viewModel.searchedStation?.value?.sys?.sunset!!), ZoneId.of("GMT+1")))
                 pressureValue?.text = viewModel.searchedStation.value?.main?.pressure?.toInt().toString() + "hPa"
@@ -278,20 +286,18 @@ class SearchedCityFragment : Fragment() {
         val goBackBtn = view.findViewById<Button>(R.id.goBackButton)
         val addToFavoriteButton = view.findViewById<Button>(R.id.addToFavoriteButton)
 
+        // Ustawienie reakcji na przyciśnięcie przycisku. Przycisk dodaje lub usuwa z ulubionych
         addToFavoriteButton.setOnClickListener {
             if (!isAddedToFavorites(viewModel.searchedStation.value?.name!!))
             {
                 viewModelFavCities.addCity(viewModel.searchedStation.value?.name!!)
+                viewModelFavCities.getCities()
                 addToFavoriteButton.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_baseline_favorite_24, 0, 0, 0)
                 Toast.makeText(context, "Added to favorites", Toast.LENGTH_SHORT).show()
             }
-            else{
-                viewModelFavCities.deleteCity(viewModel.searchedStation.value?.name!!)
-                addToFavoriteButton.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_baseline_favorite_border_24, 0, 0, 0)
-                Toast.makeText(context, "Removed from favorites", Toast.LENGTH_SHORT).show()
-            }
         }
 
+        // Dodanie reakcji na przycisk cofania
         goBackBtn.setOnClickListener {
             view -> view.findNavController().navigate(R.id.action_searchedCityFragment_to_mainFragment)
             HelperClass.currentFragment = SearchFragment.newInstance("","")

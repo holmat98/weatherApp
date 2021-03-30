@@ -12,6 +12,7 @@ import com.example.weatherapp.Model.Entities.SearchedCity
 import com.example.weatherapp.Model.HelperClass
 import com.example.weatherapp.R
 
+// Klasa odpowiedzialna za komunikację z bazą danych
 class SearchedCityAdapter(var cities: LiveData<List<SearchedCity>>, val viewModel: SearchedCityViewModel): RecyclerView.Adapter<SearchedCityAdapter.CitiesHolder>() {
     inner class CitiesHolder(view: View): RecyclerView.ViewHolder(view)
 

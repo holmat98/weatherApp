@@ -65,8 +65,11 @@ class MainFragment : Fragment() {
 
         val bttnNav = view.findViewById<BottomNavigationView>(R.id.bottomNavigation)
 
+        // Wyświeltenie strony domowej jako głównej
         makeCurrentFragment(HelperClass.currentFragment)
 
+
+        // Zamiana wyświetlanego fragmentu po naciśnięciu przycisku w menu
         bttnNav.setOnNavigationItemSelectedListener {
             when(it.itemId){
                 R.id.ic_home -> {

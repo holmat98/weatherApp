@@ -79,6 +79,9 @@ class SearchFragment : Fragment() {
             this.layoutManager = myLayoutManager
         }
 
+        // Dodanie reakcji na przycisk wyszukiwania
+        // Po przyciśnięciu sprawdzane jest czy pobrany tekst nie jest pusty.
+        // Jeśli nie to dodawany jest do bazy i do zmiennej globalnej a następnie przechodzi do odpowiedniej strony.
         SearchButton.setOnClickListener {
             val cityName = view.findViewById<TextView>(R.id.cityNameTV)
 

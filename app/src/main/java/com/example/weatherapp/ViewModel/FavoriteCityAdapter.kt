@@ -25,6 +25,7 @@ import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
+// Tutaj przypisywane są do elementów layoutu dane pobrane z Api
 class FavoriteCityAdapter(var cities: ArrayList<Station>, val context: Context?, val viewModel: StationViewModel, val viewModelFavCities: FavoriteCitiesViewModel): RecyclerView.Adapter<FavoriteCityAdapter.CitiesHolder>() {
     inner class CitiesHolder(view: View): RecyclerView.ViewHolder(view)
 
@@ -99,12 +100,12 @@ class FavoriteCityAdapter(var cities: ArrayList<Station>, val context: Context?,
             bindImage(imageView, iconUrl)
 
             var formatter = DateTimeFormatter.ofPattern("HH:mm")
-            var formatter2 = DateTimeFormatter.ofPattern("yyyy-mm-dd HH:mm")
+            var formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
             temperatureDay?.text = formatter2.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(cities.get(position)?.dt!!), ZoneId.of("GMT+1")))
-            temperatureTV?.text = cities.get(position)?.main?.temp?.toInt().toString()
+            temperatureTV?.text = cities.get(position)?.main?.temp?.toInt().toString() + "\u2103"
             weatherIconDesc?.text = cities.get(position)?.weather?.get(0)?.description
-            weatherFeels?.text = cities.get(position)?.main?.temp_min.toString() + "/" + cities.get(position)?.main?.temp_max.toString() + " feels like " +cities.get(position)?.main?.feels_like.toString()
+            weatherFeels?.text = cities.get(position)?.main?.temp_min.toString() + "\u2103" + "/" + cities.get(position)?.main?.temp_max.toString() + "\u2103" + " feels like " +cities.get(position)?.main?.feels_like.toString() + "\u2103"
             sunriseTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(cities.get(position)?.sys?.sunrise!!), ZoneId.of("GMT+1")))
             sunsetTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(cities.get(position)?.sys?.sunset!!), ZoneId.of("GMT+1")))
             pressureValue?.text = cities.get(position)?.main?.pressure?.toInt().toString() + "hPa"
@@ -196,12 +197,12 @@ class FavoriteCityAdapter(var cities: ArrayList<Station>, val context: Context?,
             )?.packageName)))
 
             var formatter = DateTimeFormatter.ofPattern("HH:mm")
-            var formatter2 = DateTimeFormatter.ofPattern("yyyy-mm-dd HH:mm")
+            var formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
 
             temperatureDay?.text = formatter2.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(cities.get(position)?.dt!!), ZoneId.of("GMT+1")))
-            temperatureTV?.text = cities.get(position)?.main?.temp?.toInt().toString()
+            temperatureTV?.text = cities.get(position)?.main?.temp?.toInt().toString() + "\u2103"
             weatherIconDesc?.text = cities.get(position)?.weather?.get(0)?.description
-            weatherFeels?.text = cities.get(position)?.main?.temp_min.toString() + "/" + cities.get(position)?.main?.temp_max.toString() + " feels like " +cities.get(position)?.main?.feels_like.toString()
+            weatherFeels?.text = cities.get(position)?.main?.temp_min.toString() + "\u2103" + "/" + cities.get(position)?.main?.temp_max.toString() + "\u2103" + " feels like " +cities.get(position)?.main?.feels_like.toString() + "\u2103"
             sunriseTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(cities.get(position)?.sys?.sunrise!!), ZoneId.of("GMT+1")))
             sunsetTime?.text = formatter.format(LocalDateTime.ofInstant(Instant.ofEpochSecond(cities.get(position)?.sys?.sunset!!), ZoneId.of("GMT+1")))
             pressureValue?.text = cities.get(position)?.main?.pressure?.toInt().toString() + "hPa"
@@ -212,7 +213,7 @@ class FavoriteCityAdapter(var cities: ArrayList<Station>, val context: Context?,
         val deleteFromFavorites = holder.itemView.findViewById<Button>(R.id.deleteFromFavoritesButton)
 
         if(viewModel.stationFromLocation.value?.name?.toLowerCase().equals(cities.get(position).name.toLowerCase())){
-            deleteFromFavorites.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_baseline_navigation_24, 0, 0, 0)
+            deleteFromFavorites.setCompoundDrawablesRelativeWithIntrinsicBounds(R.drawable.ic_baseline_location_on_24, 0, 0, 0)
             deleteFromFavorites.isClickable = false
         }
         else{

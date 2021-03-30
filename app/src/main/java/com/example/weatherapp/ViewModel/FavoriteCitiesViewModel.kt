@@ -11,6 +11,7 @@ import com.example.weatherapp.Model.Repositories.SearchedCityRepository
 import com.example.weatherapp.Model.WeatherDatabase
 import kotlinx.coroutines.launch
 
+// Klasa odpowiada za komunikację z bazą danych
 class FavoriteCitiesViewModel(application: Application) : AndroidViewModel(application) {
     val favoriteCitiesRepository: FavoriteCityRepository
     var favoriteCities: LiveData<List<FavoriteCity>>
@@ -18,6 +19,12 @@ class FavoriteCitiesViewModel(application: Application) : AndroidViewModel(appli
     init {
         favoriteCitiesRepository = FavoriteCityRepository(WeatherDatabase.getDatabase(application).favoriteCityDao())
         favoriteCities = WeatherDatabase.getDatabase(application).favoriteCityDao().getAllFavoritesCities()
+    }
+
+    fun getCities(){
+        viewModelScope.launch {
+            favoriteCities = favoriteCitiesRepository.getAllCities()
+        }
     }
 
     fun addCity(cityName: String){

@@ -61,21 +61,25 @@ class HomeFragment : Fragment() {
         }
     }
 
+    // Funkcja sprawdzająca czy użytkownik zezwolił na pobranie przez aplikację lokalizacji
     private fun checkPermission(): Boolean{
         return (ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
                 || ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED)
     }
 
+    // Funkcja wysyłająca prośbę o zezwolenia na używanie lokalizacji
     private fun requestPermission(){
         ActivityCompat.requestPermissions(requireActivity(), arrayOf(android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION), PERMISSION_ID)
     }
 
+    // Funkcja sprawdza czy w telefonie włączona jest lokalizacja
     private fun isLocationEnabled(): Boolean{
         var locationManager: LocationManager = context?.getSystemService(Context.LOCATION_SERVICE) as LocationManager //getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
+    // Funkcja pobierająca lokalizację oraz wysyłająca zapytanie do Api o pogodę z danej lokalizacji
     private fun getLastLocation(){
         if(checkPermission()){
             if(isLocationEnabled()){
@@ -117,6 +121,9 @@ class HomeFragment : Fragment() {
         }
     }
 
+    // W tej funkcji wysyłane są zapytania do Api o pogodę w ulubionych miastach,
+    // wywoływane są funkcje odpowiedzialne za pobranie lokalizacji.
+    // Gdy dane są pobrane z Api to są one dodawane do tablicy stations, która jest przypisana do recycler view
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -183,6 +190,7 @@ class HomeFragment : Fragment() {
 
         val favoriteCitiesRV = view.findViewById<RecyclerView>(R.id.favoriteCitiesRV)
 
+        // Przypisanie do recycler view odpowiednie adaptery
         recyclerView = favoriteCitiesRV.apply {
             this.adapter = myAdapter
             this.layoutManager = myLayoutManager

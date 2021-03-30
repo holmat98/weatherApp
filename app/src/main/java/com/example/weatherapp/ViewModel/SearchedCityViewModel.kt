@@ -11,6 +11,7 @@ import com.example.weatherapp.Model.Repositories.SearchedCityRepository
 import com.example.weatherapp.Model.WeatherDatabase
 import kotlinx.coroutines.launch
 
+// Klasa odpowiedzialna za komunikację z Api
 class SearchedCityViewModel(application: Application) : AndroidViewModel(application) {
     val searchedCityRepository: SearchedCityRepository
     var searchedCities: LiveData<List<SearchedCity>>
